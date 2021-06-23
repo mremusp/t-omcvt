@@ -1,4 +1,4 @@
-const apiUrl = ('http://www.mocky.io/v2/58fda6ce0f0000c40908b8c8')
+const apiUrl = ('https://www.mocky.io/v2/58fda6ce0f0000c40908b8c8')
 const articlesPerPage = 5
 const listContainer = document.querySelector('.articles')
 let articles = []
