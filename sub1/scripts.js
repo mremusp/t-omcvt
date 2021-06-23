@@ -41,7 +41,7 @@ fetch(apiUrl)
       pages[activePage % pageNumber].classList.add('active')
       renderList(activePage % pageNumber)
     
-    }, 300000)
+    }, 15000)
     
   })
 
