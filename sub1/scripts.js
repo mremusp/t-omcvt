@@ -19,7 +19,7 @@ fetch(apiUrl)
     articles = data.news
     pageNumber = Math.ceil(data.news.length / articlesPerPage);
     let pages = []
-    for(i = 0; i < pageNumber; i++) {
+    for (i = 0; i < pageNumber; i++) {
       let paginationButton = document.createElement('button')
       paginationButton.textContent = "\u00A0"
       paginationButton.setAttribute('page', i)
@@ -30,26 +30,25 @@ fetch(apiUrl)
     pages.forEach(page => {
       document.querySelector('.pagination').appendChild(page)
     })
-    console.log(pages)
 
     pages[activePage].classList.add('active')
     renderList(activePage)
-    
-    setInterval( () => {
-      pages[activePage% pageNumber].classList.remove('active')
+
+    setInterval(() => {
+      pages[activePage % pageNumber].classList.remove('active')
       activePage++
       pages[activePage % pageNumber].classList.add('active')
       renderList(activePage % pageNumber)
-    
+
     }, 15000)
-    
+
   })
 
 
 function renderList(activePage) {
   let ul = document.createElement('ul')
 
-  for (i = (articlesPerPage * activePage); i < (activePage * articlesPerPage + articlesPerPage); i++){
+  for (i = (articlesPerPage * activePage); i < (activePage * articlesPerPage + articlesPerPage); i++) {
     let li = document.createElement('li')
     let title = document.createElement('p')
     let desc = document.createElement('p')
@@ -71,7 +70,6 @@ function setPage(e) {
   document.querySelector('.active').classList.remove('active')
   e.target.classList.add('active')
   renderList(e.target.getAttribute('page'))
-  console.log(e.target.getAttribute('page'))  
 }
 
 
