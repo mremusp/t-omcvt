@@ -59,7 +59,7 @@ const {
 	openingHours: hours,
 	categories: tags,
 } = restaurant;
-console.log(restaurantName, hours, tags);
+// console.log(restaurantName, hours, tags);
 
 // destructuring nested object
 const {
@@ -97,3 +97,34 @@ const letters = [...str, ' ', 'P.'];
 
 const newRestaurant = { founder: 'Miahai', ...restaurant };
 console.log(newRestaurant);
+
+((nullishCoalescing) => {
+	restaurant.numGuests = 0;
+	const guests = restaurant.numGuests || 10; // = 10
+	const guestCorrect = restaurant.numGuests ?? 10; //  = 0
+})();
+
+((logicalAssignmentOperators) => {
+	const rest1 = {
+		name: 'Capri',
+		numGuests: 20,
+	};
+	const rest2 = {
+		name: 'La piazza',
+		owner: 'Giovanni',
+	};
+
+	rest1.numGuests = rest1.numGuests || 10;
+	rest2.numGuests = rest2.numGuests || 10;
+	//  ^ can be written as:
+	rest1.numGuests ||= 10;
+	rest2.numGuests ||= 10;
+	// pentru a permite valoarea 0:
+	rest1.numGuests ??= 10;
+
+	rest1.owner = rest1.owner && '<ANONYMOUS>'; // returns undefined
+	rest2.owner = rest2.owner && '<ANONYMOUS>'; // returns <ANONYMOUS>
+	// ^ can be written as:
+	rest1.owner &&= '<ANONYMOUS>'; // doesn't return anything
+	rest2.owner &&= '<ANONYMOUS>'; // returns <ANONYMOUS>
+})();
