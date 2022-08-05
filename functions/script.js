@@ -28,7 +28,7 @@ createBooking('for default price test', undefined);
 console.groupEnd();
 
 /* lesson 129 - passing arguments: value vs reference */
-console.group('passing arguments: value vs reference');
+console.groupCollapsed('passing arguments: value vs reference');
 
 const flight = 'LH234';
 const jonas = {
@@ -130,7 +130,7 @@ lufthansa.book(564, 'John Smith');
 
 const eurowings = {
 	name: 'Eurowings',
-	iataCode: 'EN',
+	iataCode: 'EW',
 	bookings: [],
 };
 
@@ -151,6 +151,115 @@ book.apply(swiss, flightData); /* same as .call(), but receives the function par
 console.groupEnd();
 
 /* 134: bind method */
-console.group('bind method');
+console.groupCollapsed('bind method');
+
+const bookEW = book.bind(eurowings); /* returns new function, with "this" set to the parameter !!does not call the function!! */
+const bookLH = book.bind(lufthansa);
+const bookLX = book.bind(swiss);
+bookEW(79, 'Steven Wilson');
+
+const bookEW45 = book.bind(
+	eurowings,
+	45
+); /* returns the function with the first parameter already set !!no longer needed at all!! (called partial application)*/
+bookEW45('Johnny Spaceman');
+
+/* With event listeners */
+lufthansa.planes = 300;
+lufthansa.buyPlane = function () {
+	console.log(this);
+	this.planes++;
+	console.log(this.planes);
+};
+
+// document.querySelector('.buy').addEventListener('click', lufthansa.buyPlane); /* "this" refers to the clicked button */
+document
+	.querySelector('.buy')
+	.addEventListener('click', lufthansa.buyPlane.bind(lufthansa)); /* use .bind() when need function definition, .call() to call it too */
+
+/* Partial application */
+const addTax = (rate, value) => value + value * rate;
+console.log(addTax(0.1, 200));
+
+const addVat = addTax.bind(null, 0.23); /* don't need a "this", defining a function with a permanently set parameter */
+console.log(addVat(100));
+
+/* challenge: do the tax function as func returning another function */
+const calcTax = function (value) {
+	return function (rate) {
+		return value + value * rate;
+	};
+};
+const calcTaxArr = (value) => (rate) => value + value * rate;
+console.log(calcTax(200)(0.2));
+console.log(calcTaxArr(300)(0.15));
+
+const calcTaxVAT = function (value) {
+	return calcTax(value)(0.19);
+};
+console.log(calcTaxVAT(100));
+const calcTaxVATArr = (value) => calcTaxArr(value)(0.19);
+console.log(calcTaxVATArr(1000));
+
+(function () {
+	console.log('this will not run again');
+})(); /* function declared and immediatly called */
+
+console.groupEnd();
+
+/* 137: Closures */
+console.group('Closures');
+
+/* closures are not created manually, stuff just happens in some situations */
+const secureBooking = function () {
+	let passengerCount = 0;
+	console.log(`passengers beggining: ${passengerCount}`);
+	return function () {
+		passengerCount++;
+		console.log(`${passengerCount} passengers`);
+	};
+};
+
+const booker = secureBooking();
+booker();
+booker();
+
+console.dir(booker); /* properties of a function */
+
+/* un closure e un bagaj al unei functii cu toate variabilele disponibile in scope la momentul crearii functiei */
+
+let f;
+const g = function () {
+	const a = 23;
+	f = function () {
+		console.log(a * 2);
+	};
+};
+
+const h = function () {
+	const a = 7;
+	f = function () {
+		console.log(a * 2);
+	};
+};
+
+g(); /* reassigns f with a function */
+f(); /* calls the newly assigned function */
+h(); /* re-reassigns the f function, with the variable context of h() */
+f(); /* calls the function with the new variable context */
+
+const boardPassengers = function (n, wait) {
+	const perGroup = n / 3;
+
+	setTimeout(function () {
+		console.log(`we are now boarding all ${n} passengers`);
+		console.log(`there are 2 groups, each with ${perGroup} passengers`);
+	}, wait * 1000);
+
+	console.log(`will start boarding in ${wait} seconds`);
+};
+
+const perGroup = 10000;
+boardPassengers(30, 2);
 
 console.groupEnd();
