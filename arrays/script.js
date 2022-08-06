@@ -61,11 +61,13 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
 	/* better to pass data into function, instead of using global variable */
 	containerMovements.innerHTML = '';
 
-	movements.forEach(function (mov, i) {
+	const movs = sort ? movements.slice().sort((a, b) => a - b) : movements; /* makes a copy and sorts it */
+
+	movs.forEach(function (mov, i) {
 		const type = mov > 0 ? 'deposit' : 'withdrawal';
 
 		const html = `
@@ -77,7 +79,6 @@ const displayMovements = function (movements) {
 		containerMovements.insertAdjacentHTML('afterbegin', html); /* inserts child element right at the beggining of the parent */
 	});
 };
-displayMovements(account1.movements);
 
 const createUsernames = (users) =>
 	users.forEach(
@@ -90,25 +91,94 @@ const createUsernames = (users) =>
 	);
 createUsernames(accounts);
 
-const calcDisplayBalance = (movements) => {
-	const balance = movements.reduce((sum, mov) => sum + mov, 0);
-	labelBalance.textContent = balance + '€';
-};
-calcDisplayBalance(account1.movements);
+const updateUI = function (acc) {
+	/* Display movements */
+	displayMovements(acc.movements);
 
-const calcDisplaySummary = (movements) => {
-	const incomes = movements.filter((mov) => mov > 0).reduce((acc, mov) => acc + mov, 0);
+	/* Display balance */
+	calcDisplayBalance(acc);
+
+	/* Display summary */
+	calcDisplaySummary(acc);
+};
+
+let currentAccount; /* account will be used in other functions too, hence globally defined */
+btnLogin.addEventListener('click', function (e) {
+	/* pressing eneter while input field in focus triggers a click event */
+	e.preventDefault();
+	currentAccount = accounts.find((acc) => acc.username === inputLoginUsername.value);
+
+	if (currentAccount?.pin === Number(inputLoginPin.value)) {
+		/* Display UI and message */
+		labelWelcome.textContent = `Welcome back ${currentAccount.owner.split(' ')[0]}`;
+		containerApp.style.opacity = 1;
+
+		/* Clear input fields */
+		inputLoginUsername.value = inputLoginPin.value = '';
+		inputLoginPin.blur(); /* remove focus fom field */
+
+		updateUI(currentAccount);
+	}
+});
+
+btnTransfer.addEventListener('click', function (e) {
+	e.preventDefault();
+	const amount = Number(inputTransferAmount.value);
+	const receiverAcc = accounts.find((acc) => acc.username === inputTransferTo.value);
+	inputTransferAmount.value = inputTransferTo.value = '';
+
+	if (amount > 0 && receiverAcc && amount <= currentAccount.balance && receiverAcc.username !== currentAccount.username) {
+		currentAccount.movements.push(-amount);
+		receiverAcc.movements.push(amount);
+		updateUI(currentAccount);
+	}
+});
+
+btnLoan.addEventListener('click', function (e) {
+	e.preventDefault();
+	const amount = Number(inputLoanAmount.value);
+	if (amount > 0 && currentAccount.movements.filter((mov) => mov > 0).some((deposit) => deposit >= amount / 10)) {
+		currentAccount.movements.push(amount);
+		updateUI(currentAccount);
+	}
+	inputLoanAmount.value = '';
+});
+
+btnClose.addEventListener('click', function (e) {
+	e.preventDefault();
+	if (inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin) {
+		const index = accounts.findIndex((acc) => (acc.username = currentAccount.username));
+		accounts.splice(index, 1); /* removes 1 element, starting from position "index" */
+		containerApp.style.opacity = 0;
+	}
+
+	inputCloseUsername.value = inputClosePin.value = '';
+});
+
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+	e.preventDefault();
+	displayMovements(currentAccount.movements, !sorted);
+	sorted = !sorted;
+});
+
+const calcDisplayBalance = (acc) => {
+	acc.balance = acc.movements.reduce((sum, mov) => sum + mov, 0);
+	labelBalance.textContent = acc.balance + '€';
+};
+
+const calcDisplaySummary = (account) => {
+	const incomes = account.movements.filter((mov) => mov > 0).reduce((acc, mov) => acc + mov, 0);
 	labelSumIn.textContent = `${incomes}€`;
 
-	const outcomes = movements.filter((mov) => mov < 0).reduce((acc, mov) => acc + Math.abs(mov), 0);
+	const outcomes = account.movements.filter((mov) => mov < 0).reduce((acc, mov) => acc + Math.abs(mov), 0);
 	labelSumOut.textContent = `${outcomes}€`;
 
-	const interest = movements
+	const interest = account.movements
 		.filter((mov) => mov > 0)
-		.map((deposit) => (deposit * 1.2) / 100) /* how calculate percentage (1.2% in this case) */
+		.map((deposit) => (deposit * account.interestRate) / 100) /* how calculate percentage (1.2% in this case) */
 		.filter((int) => int >= 1)
 		.reduce((sum, int) => sum + int, 0);
 	labelSumInterest.textContent = `${interest}€`;
 };
-calcDisplaySummary(account1.movements);
 const user = 'Steven Thomas Williams';

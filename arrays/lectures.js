@@ -175,4 +175,51 @@ const totalDepositsInUSD = movements
 	})
 	.reduce((sum, mov) => sum + mov, 0);
 console.log(`Total deposits in USD: ${totalDepositsInUSD}`);
+
+console.groupEnd();
+
+/* 158: .find() method */
+console.group('find, some, flat, sort');
+const firstWithdrawal = movements.find((mov) => mov < 0); /* returns first element that satisfies condition */
+
+const account = accounts.find((acc) => acc.owner === 'Jessica Davis'); /* get object from array by a property */
+
+/* 161 : some and every */
+const anyDeposits = movements.some((mov) => mov > 0); /* returns bool if ANY element passes the callback function */
+const everyDeposits = movements.every((mov) => mov > 0); /*return bool if EVERY element passes the callback function */
+
+/* Separate callback */
+const deposit = (mov) => mov > 0; /* reuse callback function */
+console.log(movements.some(deposit));
+console.log(movements.every(deposit));
+console.log(movements.filter(deposit));
+
+/* 162: flat, flatMap */
+const arrF = [[1, 2, 3], [4, 5, 6], 7, 8];
+console.log(arrF.flat()); /* removes 1 level of nesting arrays (flattens it) */
+const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+console.log(arrDeep.flat(2)); /* removes X levels of nesting arrays */
+
+// const accountMovements = accounts.map((acc) => acc.movements); /* get 1 property from array of objects */
+// const allMovements = accountMovements.flat();
+const overallBalance = accounts
+	.map((acc) => acc.movements)
+	.flat()
+	.reduce((sum, mov) => sum + mov, 0);
+
+const overallBalance2 = accounts.flatMap((acc) => acc.movements).reduce((sum, mov) => sum + mov, 0); /* first does .map(), then flat() */
+
+/* 163: sorting arrays */
+const owners = ['Jonas', 'Zach', 'Adam', 'Martha'];
+console.log(owners.sort()); /* sorts the original array (as strings)*/
+
+// return < 0, A, B (keep order)
+// return > 0, B, A (switch order)
+// movements.sort((a, b) => {
+// 	if (a > b) return 1;
+// 	if (a < b) return -1;
+// });
+movements.sort((a, b) => a - b);
+console.log(movements);
+
 console.groupEnd();
