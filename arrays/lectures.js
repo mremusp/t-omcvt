@@ -69,7 +69,7 @@ currenciesUnique.forEach(function (value, key, map) {
 console.groupEnd();
 
 /* 148: challenge */
-console.group('dog age challenge');
+console.groupCollapsed('dog age challenge');
 
 const dogsJulia = [3, 5, 2, 12, 7];
 const dogsKate = [4, 1, 15, 9, 3];
@@ -91,4 +91,88 @@ const checkDogs = function (arrJulia, arrKate) {
 // checkDogs(dogsJulia, dogsKate);
 checkDogs(dogsJulia2, dogsKate2);
 
+/* 154: coding challenge */
+
+const calcAverageHumanAge = function (ages) {
+	const agesInHumanYears = ages.map((age) => (age <= 2 ? age * 2 : 16 + age * 4)); /* step 1 */
+	const adultDogs = agesInHumanYears.filter((age) => age >= 18); /* step 2 */
+	const averageAdultAge = adultDogs.reduce((sum, age) => sum + age, 0) / adultDogs.length; /* step 3 */
+	return averageAdultAge;
+};
+const calcAverageHumanAgeArrow = (ages) =>
+	ages
+		.map((age) => (age <= 2 ? age * 2 : 16 + age * 4))
+		.filter((age) => age >= 18)
+		.reduce((sum, age, i, arr) => sum + age / arr.length, 0); /* also for average (sum + element/totalElements) */
+
+console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
+console.log(calcAverageHumanAgeArrow([16, 6, 10, 5, 6, 1, 4]));
+
+console.groupEnd();
+
+/* 149: map, filter, reduce */
+console.groupCollapsed('map, filter, reduce');
+/* .map() returns a new array, with a callback function called on each element of the original array */
+/* .filter() returns a new array, with the elements from the original which pass a specified condition */
+/* .reduce() return a single value, built from all the elements of the original array */
+
+const eurToUsd = 1.1;
+const movementsUSD = movements.map(function (mov) {
+	return mov * eurToUsd;
+});
+const movementsUSDarrow = movements.map((mov) => mov * eurToUsd);
+console.log(`movements: ${movements}, movementsUSD: ${movementsUSD}`);
+
+const movementsUSDfor = [];
+for (const mov of movements) movementsUSDfor.push(mov * eurToUsd);
+// console.log(movementsUSDfor);
+
+const movementsStrings = movements
+	.map(function (mov, i, array) {
+		/* .map() also has access to index and full array */
+		// if (mov > 0) {
+		// 	return `Movement ${i + 1}: You deposited ${mov}`;
+		// } else {
+		// 	return `Movement ${i + 1}: You withdrew ${Math.abs(mov)}`;
+		// }
+
+		/* shorter form: */
+		return `Movement ${i + 1}: You ${mov > 0 ? 'deposited' : 'withdrew'} ${Math.abs(mov)}`;
+	})
+	.join('\n');
+console.log(`Movements string:
+${movementsStrings}`);
+
+const deposits = movements.filter(function (mov) {
+	/* .filter() returns a boolean on each iteration, returned array is only true values */
+	return mov > 0;
+});
+const withdrawals = movements.filter((mov) => mov < 0).map((mov) => Math.abs(mov));
+console.log(`deposits: ${deposits}`);
+
+const globalBalance = movements.reduce(function (accumulator, currentElement, index, array) {
+	/* accumulator stores the final value of the method */
+	return accumulator + currentElement; /* each iteration returns the current value of accumulator */
+}, 0); /* second parameter of .reduce() is the initial value of the accumulator */
+
+let balance2 = 0;
+for (const mov of movements) {
+	balance2 += mov;
+}
+
+/* get maximum */
+console.log(
+	`Maximum value is ${movements.reduce((max, mov) => (mov > max ? mov : max), movements[0])}`
+); /* use first value of array as initial maximum/minimum */
+
+/* 155: chaining methods */
+const totalDepositsInUSD = movements
+	.filter((mov) => mov > 0)
+	// .map((mov) => mov * eurToUsd)
+	.map((mov, _, arr) => {
+		console.log(arr); /* how to see the array during the pipeline */
+		return mov * eurToUsd;
+	})
+	.reduce((sum, mov) => sum + mov, 0);
+console.log(`Total deposits in USD: ${totalDepositsInUSD}`);
 console.groupEnd();

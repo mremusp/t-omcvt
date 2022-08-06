@@ -78,3 +78,37 @@ const displayMovements = function (movements) {
 	});
 };
 displayMovements(account1.movements);
+
+const createUsernames = (users) =>
+	users.forEach(
+		(user) =>
+			(user.username = user.owner
+				.toLowerCase()
+				.split(' ')
+				.map((word) => word.slice(0, 1))
+				.join(''))
+	);
+createUsernames(accounts);
+
+const calcDisplayBalance = (movements) => {
+	const balance = movements.reduce((sum, mov) => sum + mov, 0);
+	labelBalance.textContent = balance + '€';
+};
+calcDisplayBalance(account1.movements);
+
+const calcDisplaySummary = (movements) => {
+	const incomes = movements.filter((mov) => mov > 0).reduce((acc, mov) => acc + mov, 0);
+	labelSumIn.textContent = `${incomes}€`;
+
+	const outcomes = movements.filter((mov) => mov < 0).reduce((acc, mov) => acc + Math.abs(mov), 0);
+	labelSumOut.textContent = `${outcomes}€`;
+
+	const interest = movements
+		.filter((mov) => mov > 0)
+		.map((deposit) => (deposit * 1.2) / 100) /* how calculate percentage (1.2% in this case) */
+		.filter((int) => int >= 1)
+		.reduce((sum, int) => sum + int, 0);
+	labelSumInterest.textContent = `${interest}€`;
+};
+calcDisplaySummary(account1.movements);
+const user = 'Steven Thomas Williams';
