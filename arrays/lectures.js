@@ -179,7 +179,7 @@ console.log(`Total deposits in USD: ${totalDepositsInUSD}`);
 console.groupEnd();
 
 /* 158: .find() method */
-console.group('find, some, flat, sort');
+console.groupCollapsed('find, some, flat, sort');
 const firstWithdrawal = movements.find((mov) => mov < 0); /* returns first element that satisfies condition */
 
 const account = accounts.find((acc) => acc.owner === 'Jessica Davis'); /* get object from array by a property */
@@ -221,5 +221,168 @@ console.log(owners.sort()); /* sorts the original array (as strings)*/
 // });
 movements.sort((a, b) => a - b);
 console.log(movements);
+
+console.groupEnd();
+
+/* 164: more ways of creating arrays */
+console.groupCollapsed('more ways of creating arrays');
+
+const x = new Array(7); /* new array with 7 empty values (???) */
+// x.fill(1); /* fills (replaces) entire array with 1 values*/
+x.fill(1, 3, 5); /* - || -, starting with position 3, up to position 5 */
+
+const y = Array.from({ length: 7 }, () => 1); /* creates array with 7 elements, all with the value of 1 */
+const z = Array.from({ length: 7 }, (_, i) => i + 1); /* creates [1, 2, 3, 4, 5, 6, 7] !! _ = throwaway variable, not used anywhere !!*/
+
+const diceRolls = Array.from({ length: 100 }, () => Math.trunc(Math.random() * 6 + 1)); /* generates array of 100 dice rolls */
+console.log('Dice rolls: ', ...diceRolls);
+
+labelBalance.addEventListener('click', () => {
+	const movementsUI = Array.from(document.querySelectorAll('.movements__value'), (el) =>
+		el.textContent.replace('€', '')
+	); /* get array of DOM elements, then run callback on each element (like .map) */
+	console.log(movementsUI);
+
+	const movementsUI2 = [...document.querySelectorAll('.movements__value')]; /* also creates array from NodeList (querySelectorAll) */
+});
+
+/* Which method to use?
+To mutate original:
+- .push (add end)
+- .unshift (add start)
+- .pop (remove end)
+- .shift (remove start)
+- .splice (remove any)
+- .reverse
+- .sort
+- .fill
+
+A new array:
+- .map
+- .filter
+- .slice
+- .concat
+- .flat
+- .flatMap
+
+An array index:
+- .indexOf (looks for value)
+- .findIndex (looks for test condition)
+
+An array element:
+- .find
+
+Know if array includes:
+- .includes (looks for value)
+- .some (looks for test condition)
+- .every -||-
+
+A new string: 
+- .join
+
+To transform to value:
+- .reduce
+
+To just loop array:
+- .forEach
+*/
+/* 166: practice array methods */
+
+const bankDepositSum = accounts
+	// .map((acc) => acc.movements) /* get only the movements arrays */
+	// .flat() /* flatten the array of arrays */
+	.flatMap((acc) => acc.movements) /* do both from above */
+	.filter((mov) => mov > 0) /* only keep positive values */
+	.reduce((sum, mov) => sum + mov, 0); /* add all values together */
+
+const depositsAbove1000 = accounts.flatMap((acc) => acc.movements).filter((mov) => mov >= 1000).length;
+const numDepositsAbove1000 = accounts.flatMap((acc) => acc.movements).reduce((nr, mov) => (mov >= 1000 ? nr + 1 : nr), 0);
+
+const sumDepositsWithdrawals = accounts
+	.flatMap((acc) => acc.movements)
+	.reduce(
+		(sum, mov) => {
+			mov > 0 ? (sum.deposits += mov) : (sum.withdrawals += Math.abs(mov));
+			// sum[mov > 0 ? 'deposits' : 'withdrawals'] += mov; /* cleaner method of above line */
+			return sum; /* reduce array into object properties */
+		},
+		{ deposits: 0, withdrawals: 0 }
+	);
+
+/* convert string into title case */
+const convertTitleCase = function (title) {
+	const exceptions = ['a', 'an', 'the', 'and', 'but', 'or', 'on', 'in', 'with'];
+	const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
+
+	const titleCase = title
+		.toLowerCase()
+		.split(' ')
+		.map((word) => (exceptions.includes(word) ? word : capitalize(word)))
+		.join(' ');
+
+	return capitalize(titleCase);
+};
+console.log(convertTitleCase('this is a nice title'));
+console.log(convertTitleCase('this is a LONG title but not too long'));
+console.log(convertTitleCase('and here is another title with an EXAMPLE'));
+console.groupEnd();
+
+/* 167: challenge */
+console.group('challenge 4');
+
+const dogs = [
+	{ weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+	{ weight: 8, curFood: 200, owners: ['Matilda'] },
+	{ weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+	{ weight: 32, curFood: 340, owners: ['Michael'] },
+];
+
+const checkFoodIntake = (dog) => {
+	if (dog.curFood < dog.recommendedFood * 0.9) {
+		return -1;
+	} else if (dog.curFood > dog.recommendedFood * 1.1) {
+		return 1;
+	} else {
+		return 0;
+	}
+};
+
+const displayHowDogEating = (dog) => {
+	if (checkFoodIntake(dog) === -1) {
+		console.log('Dog eating too little');
+	} else if (checkFoodIntake(dog) === 1) {
+		console.log('Dog eating too much');
+	} else {
+		console.log('Dog eating right');
+	}
+};
+
+dogs.forEach((dog) => {
+	dog.recommendedFood = Math.trunc(dog.weight ** 0.75 * 28);
+}); /* step 1 */
+
+displayHowDogEating(dogs.find((dog) => dog.owners.includes('Sarah'))); /* Step 2 */
+
+const { ownersEatTooMuch, ownersEatTooLittle } = dogs.reduce(
+	(arrs, dog) => {
+		if (checkFoodIntake(dog) === 1) arrs.ownersEatTooMuch.push(dog.owners);
+		else if (checkFoodIntake(dog) === -1) arrs.ownersEatTooLittle.push(dog.owners);
+		else null;
+		return arrs;
+	},
+	{ ownersEatTooMuch: [], ownersEatTooLittle: [] }
+); /* step 3 */
+
+const nameAndShame = function (arr, intake = 'much') {
+	arr.forEach((owners) => console.log(`${owners.join(' and ')}'s dog eats too ${intake}`));
+}; /* step 4 */
+nameAndShame(ownersEatTooMuch, 'much');
+nameAndShame(ownersEatTooLittle, 'little');
+
+console.log(dogs.some((dog) => dog.curFood === dog.recommendedFood)); /* step 5 */
+console.log(dogs.some((dog) => checkFoodIntake(dog) === 0)); /* step 6 */
+const dogsEatingOkay = dogs.filter((dog) => checkFoodIntake(dog) === 0); /* step 7 */
+const dogsCopy = [...dogs];
+dogsCopy.sort((a, b) => a.recommendedFood - b.recommendedFood); /* step 8 */
 
 console.groupEnd();
