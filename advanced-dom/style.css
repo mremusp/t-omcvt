@@ -177,6 +177,7 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-X: hidden;
 }
 
 .header__title {
@@ -458,8 +459,7 @@ h4 {
 }
 
 .dots__dot--active {
-  /* background-color: #fff; */
-  background-color: #888;
+  background-color: #fff;
   opacity: 1;
 }
 

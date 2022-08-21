@@ -3,8 +3,8 @@ console.groupCollapsed('select create delete');
 /* Selecting elements */
 console.log(document.documentElement, document.head, document.body); /* selects entire HTML element */
 
-const header = document.querySelector('.header'); /*returns first match */
-const allSections = document.querySelectorAll('.section'); /* returns NodeList with all elements that match */
+const header1 = document.querySelector('.header'); /*returns first match */
+const allSections1 = document.querySelectorAll('.section'); /* returns NodeList with all elements that match */
 document.getElementById('section--1'); /* first element that has passed Id */
 const allButtons =
 	document.getElementsByTagName('button'); /* returns HTMLCollection of specified elements (is live collection, updated if elements are deleted) */
@@ -16,7 +16,7 @@ const message = document.createElement('div'); /* creates DOM element and stores
 message.classList.add('cookie-message');
 message.textContent = 'We use cookies for improved analytics';
 message.innerHTML += '<button class="btn btn--close-cookie">Got it!</button>';
-header.prepend(message); /* adds parameter as first child of element */
+header1.prepend(message); /* adds parameter as first child of element */
 // header.append(message); /* adds parameter as last child of element, !! element can only be inserted once !! */
 /* prepend and append can be used to move elements, DOM elements are unique */
 // header.append(message.cloneNode(true)); /* .cloneNode copies element, true parameter copies child elements too */
@@ -120,7 +120,15 @@ console.log(h1.parentElement.children); /* all siblings */
 
 console.groupEnd();
 
-/*  */
-console.group('');
-
+/*  202: Lifecycle events */
+console.group('Lifecycle events');
+document.addEventListener('DOMContentLoaded', (e) =>
+	console.log('HTML JS CSS', e)
+); /* triggers after all HTML, CSS, JS is loaded !!not images and external resources!! */
+window.addEventListener('load', (e) => console.log('all loaded', e)); /* triggered after everything is loaded (including resources) */
+window.addEventListener('beforeunload', (e) => {
+	e.preventDefault();
+	console.log(e);
+	e.returnValue = ''; /* interrupts closing the page !!cannot be customised!! */
+});
 console.groupEnd();

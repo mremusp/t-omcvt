@@ -9,6 +9,7 @@ const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
+const nav = document.querySelector('.nav');
 
 const openModal = function (e) {
 	e.preventDefault();
@@ -89,3 +90,176 @@ tabsContainer.addEventListener('click', function (e) {
 
 	// document.querySelector(`.operations__content--${clicked.getAttribute(tab)}`);
 });
+
+/* Menu fade animation */
+const handleHover = function (e) {
+	if (e.target.classList.contains('nav__link')) {
+		console.log(e);
+		const link = e.target;
+		const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+		const logo = link.closest('.nav').querySelector('img');
+
+		siblings.forEach((el) => {
+			if (el !== e.target) el.style.opacity = this;
+		});
+		logo.style.opacity = this;
+	}
+};
+// nav.addEventListener('mouseover', (e) => handleHover(e, 0.5));
+/* Passing "argument" into handler */
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+
+// nav.addEventListener('mouseout', (e) => handleHover(e, 1));
+nav.addEventListener('mouseout', handleHover.bind(1));
+
+/* 196: Sticky navigation */
+// const initialCoords = section1.getBoundingClientRect();
+// window.addEventListener('scroll', function () {
+// 	/* Bad for performance */
+// 	if (window.scrollY > initialCoords.top) {
+// 		nav.classList.add('sticky');
+// 	} else {
+// 		nav.classList.remove('sticky');
+// 	}
+// });
+
+/* 197: Intersection observer API */
+// const obsCallback = function (entries, observer) {
+// 	entries.forEach((entry) => console.log(entry));
+// };
+// /* callback runs every time observed element intersects root element at the defined threshold */
+// const obsOptions = {
+// 	root: null,
+// 	threshold: [0, 0.2],
+// };
+
+// const observer = new IntersectionObserver(obsCallback, obsOptions);
+// observer.observe(section1);
+
+const header = document.querySelector('.header');
+const navHeight = nav.getBoundingClientRect().height;
+
+const stickyNav = function (entries) {
+	const [entry] = entries;
+	entry.isIntersecting ? nav.classList.remove('sticky') : nav.classList.add('sticky');
+};
+
+const headerObserver = new IntersectionObserver(stickyNav, {
+	root: null,
+	threshold: 0,
+	rootMargin: `-${navHeight}px`,
+}); /* rootMargin extends the size of the root */
+headerObserver.observe(header);
+
+/* 198: revealing elements on scroll */
+const allSections = document.querySelectorAll('.section');
+const revealSection = function (entries, observer) {
+	const [entry] = entries;
+
+	if (!entry.isIntersecting) return; /* guard clause */
+	entry.target.classList.remove('section--hidden');
+	observer.unobserve(entry.target); /* so it stops observing after the first trigger */
+};
+const sectionObserver = new IntersectionObserver(revealSection, { root: null, threshold: 0.1 });
+allSections.forEach((section) => {
+	section.classList.add('section--hidden');
+	sectionObserver.observe(section);
+});
+
+/* 199: lazy loading images */
+const allImages = document.querySelectorAll('img[data-src]');
+const replaceImg = function (entries, observer) {
+	const [entry] = entries;
+	if (!entry.isIntersecting) return;
+
+	console.log(entry);
+	entry.target.src = entry.target.dataset.src;
+	entry.target.addEventListener('load', function () {
+		this.classList.remove('lazy-img'); /* only remove blur after image is loaded */
+	});
+	// entry.target.classList.remove('lazy-img');
+	observer.unobserve(entry.target);
+};
+const imgObserver = new IntersectionObserver(replaceImg, {
+	root: null,
+	threshold: 0,
+	rootMargin: '200px',
+}); /* start loading image when viewport is 200px above image */
+allImages.forEach((img) => imgObserver.observe(img));
+
+/* 200: slider */
+const sliderFunc = function () {
+	const slides = document.querySelectorAll('.slide');
+	const btnLeft = document.querySelector('.slider__btn--left');
+	const btnRight = document.querySelector('.slider__btn--right');
+	const dotContainer = document.querySelector('.dots');
+
+	let currentSlide = 0;
+	const maxSlide = slides.length;
+	const createDots = function () {
+		slides.forEach((_, i) => {
+			dotContainer.insertAdjacentHTML('beforeend', `<button class="dots__dot" data-slide="${i}"></button>`);
+		});
+	};
+
+	const goToSlide = function (slide) {
+		slides.forEach((s, i) => (s.style.transform = `translateX(${(i - slide) * 100}%)`));
+		[...dotContainer.children].forEach((dot, i) => {
+			if (i == slide) {
+				console.log(i);
+				dot.classList.add('dots__dot--active');
+			} else {
+				dot.classList.remove('dots__dot--active');
+			}
+		});
+	};
+
+	const nextSlide = () => {
+		if (currentSlide < maxSlide - 1) {
+			currentSlide++;
+		} else {
+			currentSlide = 0;
+		}
+		goToSlide(currentSlide);
+	};
+	const prevSlide = () => {
+		if (currentSlide > 0) {
+			currentSlide--;
+		} else {
+			currentSlide = maxSlide - 1;
+		}
+		goToSlide(currentSlide);
+	};
+
+	// const slider = document.querySelector('.slider');
+	// slider.style.transform = 'scale(0.5) translateX(-200px)';
+	// slider.style.overflow = 'visible';
+
+	createDots();
+	goToSlide(currentSlide);
+
+	btnRight.addEventListener('click', nextSlide);
+	btnLeft.addEventListener('click', prevSlide);
+	document.addEventListener('keydown', (e) => {
+		switch (e.key) {
+			case 'ArrowRight':
+				nextSlide();
+				break;
+			case 'ArrowLeft':
+				prevSlide();
+				break;
+			default:
+				break;
+		}
+	});
+
+	dotContainer.addEventListener('click', function (e) {
+		if (e.target.classList.contains('dots__dot')) {
+			// const slide = e.target.dataset.slide; /* with destructuring below */
+			const { slide } = e.target.dataset;
+			console.log(e);
+			goToSlide(slide);
+		}
+	});
+};
+sliderFunc();
