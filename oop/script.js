@@ -1,45 +1,42 @@
 'use strict';
-/*  208: constructor functions */
-console.group('constructor functions');
-/* constructor functions are identical to regular functions, with the added "new" operator */
-const Person = function (firstName, birthYear) {
-	/* convention: start constructor with uppercase letter */
-	this.firstName = firstName;
-	this.birthYear = birthYear;
+/*  212: Coding challenge */
+console.groupCollapsed('car coding challenge');
 
-	/* do not do this: */
-	// this.calcAge = function () {
-	// 	console.log(2037 - birthYear);
+const Car = function (make, speed) {
+	this.make = make;
+	this.speed = speed;
+
+	// this.accelerate = function () {
+	// 	this.speed += 10;
+	// 	console.log(`New speed of ${this.make}: ${this.speed}`);
 	// };
-}; /* arrow functions don't work as constructors (need this keyword) */
-
-const marius = new Person('Marius', 1993);
-/* because of "new":
-1. new {} is created
-2. function is called, this = {}
-3. {} linked to prototype
-4. function automatically returns {}
-*/
-console.log(marius);
-console.log(marius instanceof Person); /* checks if object is built with constructor */
-
-const matilde = new Person('Matilde', 2001);
-const jack = new Person('Jack', 1992);
-console.groupEnd();
-
-/* 209: prototypes */
-console.group('Prototypes');
-Person.prototype.calcAge = function () {
-	console.log(2038 - this.birthYear);
+	// this.brake = function () {
+	// 	this.speed -= 5;
+	// 	console.log(`New speed of ${this.make}: ${this.speed}`);
+	// };
+	/* methods not added to the Car constructor, but to Car.prototype (performance reasons) */
 };
 
-marius.calcAge();
-console.log(Person.prototype); /* prototype of linked objects */
-console.log(marius.__proto__); /* prototype of object instance */
+Car.prototype.accelerate = function () {
+	this.speed += 10;
+	console.log(`New speed of ${this.make}: ${this.speed}`);
+};
 
-Person.prototype.species = 'Homo Sapiens';
-console.log(marius.species, jack.species);
-console.log(marius.hasOwnProperty('firstName')); /* property of object */
-console.log(marius.hasOwnProperty('species')); /* property of prototype */
+Car.prototype.brake = function () {
+	this.speed -= 5;
+	console.log(`New speed of ${this.make}: ${this.speed}`);
+};
+
+const bmw = new Car('BMW', 120);
+const merc = new Car('Mercedes', 110);
+
+bmw.accelerate();
+bmw.brake();
+bmw.brake();
+bmw.brake();
+merc.accelerate();
+merc.accelerate();
+merc.accelerate();
+merc.accelerate();
 
 console.groupEnd();
