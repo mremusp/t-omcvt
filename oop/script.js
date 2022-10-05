@@ -40,3 +40,41 @@ merc.accelerate();
 merc.accelerate();
 
 console.groupEnd();
+
+/* 213: Coding challenge #2 */
+console.group('coding challenge #2');
+
+class CarUS {
+	constructor(make, speed) {
+		this.make = make;
+		this.speed = speed;
+	}
+
+	accelerate() {
+		this.speed += 10;
+		console.log(this.speedUS + 'mi/h');
+	}
+
+	brake() {
+		this.speed -= 5;
+		console.log(this.speedUS + 'mi/h');
+	}
+
+	get speedUS() {
+		return Math.trunc(this.speed / 1.6);
+	}
+
+	set speedUS(newSpeed) {
+		this.speed = newSpeed * 1.6;
+	}
+}
+
+const ford = new CarUS('Ford', 120);
+
+ford.accelerate();
+ford.speedUS = 100;
+ford.brake();
+ford.accelerate();
+ford.accelerate();
+
+console.groupEnd();

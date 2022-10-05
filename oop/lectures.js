@@ -96,7 +96,7 @@ console.dir((x) => x + 1);
 console.groupEnd();
 
 /*  213: ES6 Classes */
-console.group('ES6 Classes');
+console.groupCollapsed('ES6 Classes');
 
 /* class expression */
 // const PersonCl = class{
@@ -105,21 +105,43 @@ console.group('ES6 Classes');
 
 /* class declaration */
 class PersonCl {
-	constructor(firstName, birthYear) {
-		this.firstName = firstName;
+	constructor(fullName, birthYear) {
+		this.fullName = fullName;
 		this.birthYear = birthYear;
 	}
+
+	/* instance methods */
 	calcAge() {
 		console.log(2037 - this.birthYear);
 	} /* methods declared in a class are on the prototype, not the object instance */
+
+	get age() {
+		return 2037 - this.birthYear;
+	}
+
+	set fullName(name) {
+		if (name.includes(' ')) this._fullName = name;
+		else alert(`${name} is not a full name!`);
+	} /* the setter is called when the property is declared with the constructor */
+
+	get fullName() {
+		return this._fullName;
+	}
+	/* jessica.fullName will call the getter, not display the property */
+
+	/* static method */
+	static hey() {
+		console.log('howdy 🤠');
+	}
 }
 
-const jessica = new PersonCl('Jessica', 1996);
+const jessica = new PersonCl('Jessica Davis', 1996);
 console.log(jessica);
 jessica.calcAge();
+console.log(jessica.age);
 
 PersonCl.prototype.greet = function () {
-	console.log(`Hey ${this.firstName}`);
+	console.log(`Hey ${this.fullName}`);
 };
 jessica.greet();
 
@@ -128,4 +150,58 @@ jessica.greet();
 2. Classes are first-class citizens (can be passed into functions, or returned from functions)
 3. Classes are executed in strict mode (even without "use strict")
 */
+console.groupEnd();
+
+/* 214: Getters and setters */
+console.groupCollapsed('getters and setters');
+
+const account = {
+	owner: 'marius',
+	movements: [100, 150, 200, 300],
+
+	get latest() {
+		/* "get" keyword for getter function */
+		return this.movements.slice(-1).pop();
+	},
+
+	set latest(mov) {
+		/* "set" keyword for setter, parameter needed */
+		this.movements.push(mov);
+	},
+};
+
+console.log(account.latest); /* called like a property, not a function */
+account.latest = 50; /* this is like latest(50) */
+
+Person.hey = function () {
+	console.log(`Hey there 😁`);
+};
+Person.hey();
+
+console.groupEnd();
+
+/* 216: Object.create */
+console.group('Object.create');
+
+const PersonProto = {
+	calcAge() {
+		console.log(2037 - this.birthYear);
+	},
+
+	init(firstName, birthYear) {
+		this.firstName = firstName;
+		this.birthYear = birthYear;
+	},
+};
+
+const steven = Object.create(PersonProto);
+console.log(steven);
+steven.name = 'Steven';
+steven.birthYear = 2002;
+steven.calcAge();
+
+const sarah = Object.create(PersonProto);
+sarah.init('Sarah', 1990);
+sarah.calcAge();
+
 console.groupEnd();
