@@ -1,6 +1,6 @@
 'use strict';
 /*  212: Coding challenge */
-console.groupCollapsed('car coding challenge');
+console.group('car coding challenge');
 
 const Car = function (make, speed) {
 	this.make = make;
@@ -39,10 +39,39 @@ merc.accelerate();
 merc.accelerate();
 merc.accelerate();
 
+/* 219: coding challenge #3 */
+console.group('electric vehicle child class');
+
+const EV = function (make, speed, charge) {
+	Car.call(this, make, speed);
+	this.charge = charge;
+};
+
+EV.prototype = Object.create(Car.prototype);
+
+EV.prototype.chargeTo = function (newCharge) {
+	this.charge = newCharge;
+};
+
+EV.prototype.accelerate = function () {
+	this.speed += 20;
+	this.charge -= 1;
+	console.log(`${this.make} going at ${this.speed} km/h, with a charge of ${this.charge}%`);
+};
+
+EV.prototype.constructor = EV;
+
+const tesla = new EV('Tesla', 120, 80);
+console.log(tesla instanceof EV);
+tesla.chargeTo(90);
+tesla.accelerate();
+
+console.groupEnd();
+
 console.groupEnd();
 
 /* 213: Coding challenge #2 */
-console.group('coding challenge #2');
+console.groupCollapsed('coding challenge #2');
 
 class CarUS {
 	constructor(make, speed) {
