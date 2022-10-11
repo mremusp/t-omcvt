@@ -251,4 +251,28 @@ console.group('Constructor function');
 })();
 console.groupEnd();
 
+console.group('ES6 Classes');
+
+class StudentCl extends PersonCl {
+	constructor(fullName, birthYear, course) {
+		/* needs to happen first (creates "this" keyword) */
+		super(fullName, birthYear);
+		this.course = course;
+	}
+
+	introduce() {
+		console.log(`My name is ${this.fullName} and I study ${this.course}`);
+	}
+
+	calcAge() {
+		console.log(`I am ${2037 - this.birthYear} years old, but I feel like ${2037 - this.birthYear + 10}`);
+	}
+}
+
+const martha = new StudentCl('Martha Jones', 2012, 'Comp Sci');
+martha.introduce();
+martha.calcAge();
+
+console.groupEnd();
+
 console.groupEnd();
