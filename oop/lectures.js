@@ -207,9 +207,9 @@ sarah.calcAge();
 console.groupEnd();
 
 /* 218: Inheritance */
-console.group('Inheritance');
+console.groupCollapsed('Inheritance');
 
-console.group('Constructor function');
+console.groupCollapsed('Constructor function');
 (() => {
 	const Person = function (firstName, birthYear) {
 		this.firstName = firstName;
@@ -251,7 +251,7 @@ console.group('Constructor function');
 })();
 console.groupEnd();
 
-console.group('ES6 Classes');
+console.groupCollapsed('ES6 Classes');
 
 class StudentCl extends PersonCl {
 	constructor(fullName, birthYear, course) {
@@ -273,6 +273,133 @@ const martha = new StudentCl('Martha Jones', 2012, 'Comp Sci');
 martha.introduce();
 martha.calcAge();
 
+console.groupEnd();
+
+console.groupCollapsed('Object.create');
+
+const StudentProto = Object.create(PersonProto);
+StudentProto.init = function (firstName, birthYear, course) {
+	PersonProto.init.call(this, firstName, birthYear);
+	this.course = course;
+};
+
+StudentProto.introduce = function () {
+	console.log(`me llama ${this.firstName} and I study ${this.course}`);
+};
+const jay = Object.create(StudentProto);
+jay.init('Jay', 2009, 'Computer Science');
+jay.introduce();
+jay.calcAge();
+
+console.groupEnd();
+console.groupEnd();
+
+console.group('Encapsulation');
+/* 222: another class example */
+console.groupCollapsed('another class example');
+
+class Account {
+	constructor(owner, currency, pin) {
+		this.owner = owner;
+		this.currency = currency;
+		this.pin = pin;
+		// this.movements = []; /* properties created with no input */
+		this._movements = []; /* protected property convention, _ means property should not be changed outside the class */
+		this.locale = navigator.language;
+
+		console.log(`thanks for opening an account, ${owner}`);
+	}
+
+	/* Public interface */
+	getMovements() {
+		return this._movements;
+	}
+
+	deposit(val) {
+		this._movements.push(val);
+		return this; /* allows chaining of methods */
+	}
+
+	withdraw(val) {
+		this.deposit(-val);
+		return this;
+	}
+
+	_approveLoan(val) {
+		return true;
+	}
+
+	requestLoan(val) {
+		if (this._approveLoan(val)) {
+			this.deposit(val);
+			console.log('Loan approved');
+			return this;
+		}
+	}
+}
+
+const acc1 = new Account('Jonas', 'EUR', 1111);
+
+// acc1.movements.push(250);
+// acc1.movements.push(-140);
+/* this not good ^ */
+acc1.deposit(250);
+acc1.withdraw(140);
+console.log(acc1);
+/* 'Protected properties and methods' */
+console.log(acc1.getMovements());
+
+console.groupEnd();
+
+console.groupCollapsed('Private class fields and methods');
+
+class AccountPr {
+	/* Public fields: (instances) */
+	locale = navigator.language;
+
+	/* Private fields: (instances) */
+	#movements = [];
+	#pin;
+
+	constructor(owner, currency, pin) {
+		this.owner = owner;
+		this.currency = currency;
+		this.#pin = pin;
+
+		console.log(`thanks for opening an account, ${owner}`);
+	}
+
+	/* Public methods: */
+	getMovements() {
+		return this.#movements;
+	}
+
+	deposit(val) {
+		this.#movements.push(val);
+	}
+
+	withdraw(val) {
+		this.deposit(-val);
+	}
+
+	requestLoan(val) {
+		if (this.#approveLoan(val)) {
+			this.deposit(val);
+			console.log('Loan approved');
+		}
+	}
+
+	/* Private methods: */
+	#approveLoan(val) {
+		return true;
+	}
+}
+
+console.groupEnd();
+
+console.group('chaining methods');
+acc1.deposit(300).deposit(500).withdraw(35).requestLoan(2500).withdraw(4000);
+console.log(acc1.getMovements());
 console.groupEnd();
 
 console.groupEnd();

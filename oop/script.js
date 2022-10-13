@@ -1,6 +1,6 @@
 'use strict';
 /*  212: Coding challenge */
-console.group('car coding challenge');
+console.groupCollapsed('car coding challenge');
 
 const Car = function (make, speed) {
 	this.make = make;
@@ -40,7 +40,7 @@ merc.accelerate();
 merc.accelerate();
 
 /* 219: coding challenge #3 */
-console.group('electric vehicle child class');
+console.groupCollapsed('electric vehicle child class');
 
 const EV = function (make, speed, charge) {
 	Car.call(this, make, speed);
