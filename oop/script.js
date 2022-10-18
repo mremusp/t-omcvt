@@ -107,3 +107,37 @@ ford.accelerate();
 ford.accelerate();
 
 console.groupEnd();
+
+/* 227: challenge #4 */
+console.group('EV class');
+
+class EVCl extends CarUS {
+	#charge;
+	constructor(make, speed, charge) {
+		super(make, speed);
+		this.#charge = charge;
+	}
+
+	getCharge() {
+		return this.#charge;
+	}
+	chargeBattery(chargeTo) {
+		this.#charge = chargeTo;
+		return this;
+	}
+
+	accelerate() {
+		this.speed += 10;
+		this.chargeBattery(this.getCharge() - 1);
+		return this;
+	}
+
+	brake() {
+		this.speed -= 5;
+		return this;
+	}
+}
+
+const volt = new EVCl('chevy volt', 120, 23);
+
+console.groupEnd();
